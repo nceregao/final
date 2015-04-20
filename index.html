@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Дневник</title>
+    <link rel="stylesheet" href="js/jquery-ui-1.11.4.custom/jquery-ui.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/script.js"></script>
+</head>
+<body>
+    <div id="wrap">
+        <header class="header">
+            <h1>Дневник</h1>
+        </header>
+        <div id="main">
+            <aside class="aside-left">
+                <ul class="nav">
+                    <li><a href="#list">Список событий</a></li>
+                    <li><a href="#event/add">Добавить событие</a></li>
+                    <li><a href="#place">Где я был</a></li>
+                </ul>
+            </aside>
+            <section id="content">
+            </section>
+        </div>
+    </div>
+
+
+
+
+
+    <script type="text/list_tpl" id="list_tpl">
+        <ul class="list-events">
+        <% _.each(item, function(item) { %>
+            <li class="list__event" data-id="<%= item.id %>">
+                <a href="#" class="delete">remove</a>
+                <a href="#event/edit/<%= item.id %>" class="edit">edit</a>
+                <div class="name"><%= item.name %></div>
+                <div class="date"><%= new Date(item.date).toLocaleDateString() %></div>
+                <p><%= item.text %></p>
+            </li>
+        <% }) %>
+        </ul>
+        <div id="dialog" title="Delete dialog">
+            <p>Are you sure deleted this item?</p>
+        </div>
+    </script>
+
+    <script type="text/event_tpl" id="event_tpl">
+        <div class="event" data-id="<%= id %>">
+            <h1><%= name %></h1>
+            <p class="date"><%= new Date(date).toLocaleDateString() %></p>
+            <p class="description"><%= text %></p>
+            <p class="related"><%= related %></p>
+            <div id="map"></div>
+            <a href="#" class="delete">remove</a>
+            <a href="#event/edit/<%= id %>" class="edit">edit</a>
+        </div>
+        <div id="dialog" title="Delete dialog">
+            <p>Are you sure deleted this item?</p>
+        </div>
+    </script>
+
+
+    <script type="text/add_tpl" id="add_tpl">
+        <form id="add-event">
+            <input type="hidden" name="id" value="<%= id %>">
+
+            <label class="input-holder">
+                <input type="text" name="nameEvent" value="<%= name %>" placeholder="Название события">
+            </label>
+            <label class="input-holder">
+                <textarea name="description" cols="30" rows="50" placeholder="Описание"><%= text %></textarea>
+            </label>
+            <label class="input-holder">
+                <input type="text" name="date" value="<% if (date) { %><%= new Date(date).toLocaleDateString() %><% } %>" placeholder="Дата" id="date">
+            </label>
+            <label class="input-holder">
+                <select name="related">
+                    <option value="positive">Положительно</option>
+                    <option value="negative">Отрицательное</option>
+                    <option value="neutrally">Нейтральное</option>
+                </select>
+            </label>
+            <div id="map"></div>
+            <input type="submit" name="save" value="Сохранить" class="button">
+        </form>
+    </script>
+
+    <script type="text/place_tpl" id="place_tpl">
+        <div id="map" class="all-events"></div>
+    </script>
+
+</body>
+</html>
