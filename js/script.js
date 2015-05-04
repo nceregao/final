@@ -16,11 +16,12 @@ $(function() {
     }
 
     function mapInit() {
-        return new google.maps.Map(document.getElementById("map"), {
+        var mapOptions = {
             center: new google.maps.LatLng(49.9945914, 36.2858248),
             zoom: 10,
             mapTypeId: google.maps.MapTypeId.ROADMAP
-        });
+        };
+        return new google.maps.Map(document.getElementById("map"), mapOptions);
     }
 
     function saveListEvent() {
@@ -35,7 +36,9 @@ $(function() {
         this.textStyle = param.textStyle || '';
         this.date = param.date || '';
         this.related = param.related || '';
+        this.video = param.video || '';
         this.marker = param.marker || '';
+        this.photos = param.photos || '';
     }
 
     function showEdit(id) {
@@ -53,6 +56,7 @@ $(function() {
         }
 
         $('#content').html(addTpl(oneEvent));
+        map = mapInit();
         $('#date').datepicker({
             dateFormat: 'dd.mm.yy'
         });
@@ -60,7 +64,6 @@ $(function() {
             $('#date').datepicker('destroy');
         });
         $('select').selectmenu();
-        map = mapInit();
         formEvent = $('#add-event');
 
         if ( id ) {
@@ -76,6 +79,7 @@ $(function() {
                 map.setCenter(marker.getPosition());
             }
         }
+
         google.maps.event.addListener(map, 'click', function(ev) {
             if (marker) {
                 marker.setPosition(ev.latLng);
@@ -90,29 +94,29 @@ $(function() {
         });
 
         formEvent.on('submit', function(e) {
-            e.preventDefault();
-
             var nameEvent = $(this.nameEvent).val(),
                 text = $(this.description).val(),
                 textStyle = $(this.description).attr('style'),
-                date = Date.parse($(this.date).datepicker("getDate")),
+                date = $(this.date).datepicker("getDate"),
                 related = $(this.related).val(),
+                video = $(this.video).val(),
+                photos = $(this.photos).val(),
                 errorList = '',
                 newEvent;
+
+            e.preventDefault();
 
             if (nameEvent === '') {
                 $(this.nameEvent).addClass('g-error');
                 errorList = 'Введите название события!';
-            }
-            if (text === '') {
+            } else if (text === '') {
                 $(this.description).addClass('g-error');
-                errorList = errorList === '' ? 'Введите описание события!' : errorList;
-            }
-            if (/^\d\d.\d\d.\d\d$/.test(date)) {
+                errorList = 'Введите описание события!';
+            } else if (!_.isDate(date)) {
                 $(this.date).addClass('g-error');
-                errorList = errorList === '' ? 'Введите правильную дату!' : errorList;
+                errorList = 'Введите правильную дату!';
             }
-            if (errorList === '' && $('.errormsg').is(':empty')) {
+            if (errorList === '') {
                 $('.errormsg').hide().empty();
                 $(this).find('.g-error').removeClass('g-error');
             } else {
@@ -125,12 +129,14 @@ $(function() {
                 name: nameEvent,
                 text: text,
                 textStyle: textStyle,
-                date: date,
-                related: related
+                date: Date.parse(date),
+                related: related,
+                video: video,
+                photos: photos
             });
 
             if (marker) {
-                newEvent.marker = [marker.position.k, marker.position.D];
+                newEvent.marker = _.toArray(marker.getPosition());
             }
             if ( id ) {
                 oneEvent = _.extend(oneEvent, newEvent);
@@ -157,12 +163,12 @@ $(function() {
                 field.css(styleName, target.is(':checked') ? value : '');
             }
         });
+
         formEvent.find('[name=fontSize]').val($('[name=description]').css('fontSize')).selectmenu({
             change: function(event, ui) {
                 formEvent.find('[name=description]').css('font-size', $(this).val() + 'px');
             }
         });
-
 
         formEvent.find('[name=nameEvent]').change(function(){
             var $this = $(this),

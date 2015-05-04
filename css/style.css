@@ -146,8 +146,8 @@ a {
 }
 
 #content {
-    max-width: 660px;
-    padding: 30px 0 100px;
+    max-width: 670px;
+    padding: 30px 10px 100px;
     margin: auto;
 }
 
@@ -193,6 +193,7 @@ select {
     border-radius: 4px;
     border: 1px solid #ccc;
     padding: 10px;
+    overflow: hidden;
 }
 .delete {
     position: absolute;
@@ -318,4 +319,16 @@ select {
 }
 .block-sorting {
     float: right;
+}
+
+
+.block-photo img {
+    max-width: 100%;
+    height: auto !important;
+}
+.list-events img {
+    max-width: 200px;
+    height: auto;
+    float: left;
+    margin: 0 10px 10px 0;
 }

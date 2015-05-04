@@ -57,7 +57,12 @@
                 <li data-id="<%= item.id %>">
                     <a href="#" class="delete">remove</a>
                     <a href="#event/edit/<%= item.id %>" class="edit">edit</a>
-                    <div class="name"><a href="#event/<%= item.id %>"><%= item.name %></a></div>
+                    <a href="#event/<%= item.id %>">
+                <% if (item.photos !== '') { %>
+                        <img src="<%= item.photos %>" alt="" width="" height="">
+                <% } %>
+                        <span class="name"><%= item.name %></span>
+                    </a>
                     <div class="date"><%= new Date(item.date).toLocaleDateString() %></div>
                     <p style="<%= item.textStyle %>"><%= item.text %></p>
                 </li>
@@ -70,16 +75,23 @@
     </script>
     <script type="text/event_tpl" id="event_tpl">
         <div class="event" data-id="<%= id %>">
+            <a href="#" class="delete">remove</a>
+            <a href="#event/edit/<%= id %>" class="edit">edit</a>
             <h1><%= name %></h1>
             <p class="date"><%= new Date(date).toLocaleDateString() %></p>
             <p class="description" style="<%= textStyle %>"><%= text %></p>
             <p class="related"><%= related %></p>
+        <% if (photos !== '') { %>
+            <div class="block-photo">
+                <img src="<%= photos %>" alt="" width="" height="">
+            </div>
+        <% } %>
             <div id="map"></div>
-            <a href="#" class="delete">remove</a>
-            <a href="#event/edit/<%= id %>" class="edit">edit</a>
+        <% if (video !== '') { %>
+            <iframe width="100%" height="315" src="<%= video %>" frameborder="0" allowfullscreen></iframe>
+        <% } %>
         </div>
     </script>
-
     <script type="text/add_tpl" id="add_tpl">
         <div class="general-form">
             <form id="add-event">
@@ -114,14 +126,20 @@
                     <textarea name="description" cols="30" rows="50" placeholder="Описание" style="<%= textStyle %>"><%= text %></textarea>
                 </label>
                 <label class="input-holder">
-                    <input type="text" name="date" value="<% if (date) { %><%= new Date(date).toLocaleDateString() %><% } %>" placeholder="Дата в формате дд.мм.гг" id="date">
+                    <input type="text" name="date" value="<%= date && new Date(date).toLocaleDateString() %>" placeholder="Дата в формате дд.мм.гг" id="date">
                 </label>
                 <label class="input-holder">
                     <select name="related" id="related">
-                        <option value="positive">Положительно</option>
-                        <option value="negative">Отрицательное</option>
-                        <option value="neutrally">Нейтральное</option>
+                        <option value="Положительно">Положительно</option>
+                        <option value="Отрицательное">Отрицательное</option>
+                        <option value="Нейтральное">Нейтральное</option>
                     </select>
+                </label>
+                <label class="input-holder">
+                    <input type="text" name="photos" placeholder="Ссылка для фото" value="<%= photos %>">
+                </label>
+                <label class="input-holder">
+                    <input type="text" name="video" placeholder="Ссылка для видео" value="<%= video %>">
                 </label>
                 <div id="map"></div>
                 <p class="errormsg"></p>
