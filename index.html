@@ -18,18 +18,18 @@
         </header>
         <div id="main">
             <aside class="aside-left">
-                <ul class="nav">
-                    <li><a href="#list">Список событий</a></li>
-                    <li><a href="#event/add">Добавить событие</a></li>
-                    <li><a href="#place">Где я был</a></li>
-                </ul>
+                <nav class="nav">
+                    <a href="#list">Список событий</a>
+                    <a href="#event/add">Добавить событие</a>
+                    <a href="#place">Где я был</a>
+                </nav>
             </aside>
             <section id="content">
             </section>
         </div>
     </div>
 
-    <div id="dialog" title="Delete dialog">
+    <div id="dialog" title="Delete">
         <p>Are you sure deleted this event?</p>
     </div>
 
@@ -49,6 +49,9 @@
                     <option value="">Сортировка</option>
                     <option value="date">По дате</option>
                     <option value="name">По названию</option>
+                    <option value="Положительно">Положительно</option>
+                    <option value="Отрицательное">Отрицательное</option>
+                    <option value="Нейтральное">Нейтральное</option>
                 </select>
             </div>
             <% } %>
@@ -65,6 +68,7 @@
                     </a>
                     <div class="date"><%= new Date(item.date).toLocaleDateString() %></div>
                     <p style="<%= item.textStyle %>"><%= item.text %></p>
+                    <p class="related">Отношение к событию: <%= item.related %></p>
                 </li>
             <% }) %>
             </ul>
@@ -80,7 +84,7 @@
             <h1><%= name %></h1>
             <p class="date"><%= new Date(date).toLocaleDateString() %></p>
             <p class="description" style="<%= textStyle %>"><%= text %></p>
-            <p class="related"><%= related %></p>
+            <p class="related">Отношение к событию: <%= related %></p>
         <% if (photos !== '') { %>
             <div class="block-photo">
                 <img src="<%= photos %>" alt="" width="" height="">
@@ -99,7 +103,7 @@
                     <input type="text" name="nameEvent" value="<%= name %>" placeholder="Название события">
                 </label>
 
-                <label class="input-holder block-styles">
+                <div class="input-holder block-styles">
                     <select name="fontSize">
                         <option value="12">12</option>
                         <option value="14">14</option>
@@ -120,7 +124,7 @@
                             <li><label><input type="radio" name="color" value="yellow">yellow</label></li>
                         </ul>
                     </div>
-                </label>
+                </div>
 
                 <label class="input-holder">
                     <textarea name="description" cols="30" rows="50" placeholder="Описание" style="<%= textStyle %>"><%= text %></textarea>

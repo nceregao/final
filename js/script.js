@@ -6,7 +6,7 @@ $(function() {
         errrorTpl = _.template($('#errorpage_tpl').html()),
         listEvent = JSON.parse(localStorage.getItem('listEvent')) || [];
 
-
+    // генерация уникального id с проверкой на совпадения
     function generateId() {
         var newId = _.uniqueId();
         var oneEvent = _.find(listEvent, function(item) {
@@ -15,6 +15,7 @@ $(function() {
         return oneEvent ? generateId(listEvent) : newId;
     }
 
+    // инициализация карты
     function mapInit() {
         var mapOptions = {
             center: new google.maps.LatLng(49.9945914, 36.2858248),
@@ -24,10 +25,12 @@ $(function() {
         return new google.maps.Map(document.getElementById("map"), mapOptions);
     }
 
+    // сохранение списка на localStorage
     function saveListEvent() {
         localStorage.setItem('listEvent', JSON.stringify(listEvent));
     }
 
+    // конструктор события
     function Event(param) {
         param = param || {};
         this.id = param.id || '';
@@ -41,6 +44,7 @@ $(function() {
         this.photos = param.photos || '';
     }
 
+    // форма для добавления и редактирования события
     function showEdit(id) {
         var oneEvent,
             formEvent,
@@ -147,8 +151,14 @@ $(function() {
             location.hash = '#event/' + (id || newEvent.id);
         });
 
-        $('.select-color').click(function(ev) {
+        $('.select-color').click(function(e) {
+            e.stopPropagation();
             $(this).toggleClass('open');
+        });
+        $('body').on('click', function(){
+            if ($('.select-color').hasClass('open')) {
+                $('.select-color').removeClass('open');
+            }
         });
 
         formEvent.on('change', '[name=fontWeight], [name=fontStyle], [name=textDecoration], [name=color]', function(event) {
@@ -194,33 +204,45 @@ $(function() {
                 $('.errormsg').hide().empty();
             }
         });
+        formEvent.find('[name=date]').change(function(){
+            var $this = $(this),
+                val =  $(this).datepicker("getDate");
+
+            if (!_.isDate(val) && !$this.hasClass('g-error')) {
+                $this.addClass('g-error');
+                $('.errormsg').text('Введите правильную дату!').show();;
+            } else if ($this.hasClass('g-error')) {
+                $this.removeClass('g-error');
+                $('.errormsg').hide().empty();
+            }
+        });
     }
 
 
+    // отображение всех событий на карте
     function showPlace() {
-        var map,
-            markers = [];
+        var map;
 
         $('#content').html(placeTpl());
         map = mapInit();
 
-        for (var i = 0; i < listEvent.length; i++) {
-            if (listEvent[i].marker) {
-                markers[i] = new google.maps.Marker({
+        _.each(listEvent, function(oneEvent, i) {
+            var marker;
+
+            if (oneEvent.marker) {
+                marker = new google.maps.Marker({
                     map: map,
-                    title: listEvent[i].name,
-                    position: new google.maps.LatLng(listEvent[i].marker[0], listEvent[i].marker[1])
+                    title: oneEvent.name,
+                    position: new google.maps.LatLng(oneEvent.marker[0], oneEvent.marker[1])
                 });
-                google.maps.event.addListener(markers[i], 'click', (function(i) {
-                    return function(ev) {
-                        location.hash = '#event/' + listEvent[i].id;
-                    };
-                })(i));
+                google.maps.event.addListener(marker, 'click', function() {
+                    location.hash = '#event/' + oneEvent.id;
+                });
             }
-        }
+        });
     }
 
-
+    // удаление события по id
     function remove(id) {
         listEvent = _.filter(listEvent, function(event) {
             return event.id != id;
@@ -228,7 +250,7 @@ $(function() {
         saveListEvent();
     }
 
-
+    // модальное окно подтверждения удаления события
     function removeDialog() {
         $("#dialog").dialog({
             autoOpen: false,
@@ -254,25 +276,26 @@ $(function() {
         });
     }
 
-
+    // отображение списка событий
     function showList(sort) {
         $('#content').html(listTpl({item: listEvent}));
 
         if (listEvent.length === 0) {
             return;
         }
+
         $('.list-events').on('click', '.delete', function(e){
             var id = $(this).parent().data('id');
             $("#dialog").data('id', id).dialog('open');
             e.preventDefault();
         });
-
         $('#sorting').val(sort || '').selectmenu({
-            width: 150,
+            width: 160,
             change: function(ev, ui) {
                 var val = ui.item.value;
 
                 if (val === '') {
+                    $('.list-events li').show();
                     return;
                 } else if (val === 'date') {
                     listEvent.sort(function(a, b) {
@@ -284,6 +307,15 @@ $(function() {
                        var compB = b.name.toUpperCase();
                        return (compA < compB) ? -1 : (compA > compB) ? 1 : 0;
                     })
+                } else if (val === 'Положительно' || val === 'Отрицательное' || val === 'Нейтральное') {
+                    $('.list-events li').each(function(i) {
+                        if (listEvent[i].related == val) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                    return;
                 }
                 saveListEvent();
                 showList(val);
@@ -312,7 +344,7 @@ $(function() {
         });
     }
 
-
+    // отображение одного события
     function showEvent(id) {
         var map,
             marker,
@@ -343,17 +375,21 @@ $(function() {
         });
     }
 
-
+    // 404
     function showErrorPage() {
         $('#content').html(errrorTpl());
     }
 
 
-
     function route() {
         var hash = location.hash,
             navActive = $('.nav a[href="' + hash + '"]'),
-            id;
+            id = hash.match(/^(#event\/(edit\/)?)(.+?)$/);
+
+        $('.nav .active').removeClass('active');
+        if (navActive.length) {
+            navActive.addClass('active');
+        }
 
         if (hash === "" || hash === "#list") {
             showList();
@@ -361,18 +397,12 @@ $(function() {
             showPlace();
         } else if (hash === "#event/add") {
             showEdit();
-        } else if (/#event\/edit\//.test(hash)) {
-            showEdit(hash.match(/#event\/edit\/(.+?)$/)[1]);
-        } else if (/#event\//.test(hash)) {
-            showEvent(hash.match(/#event\/(.+?)$/)[1]);
+        } else if (id && id[1] == '#event/edit/') {
+            showEdit(id[3]);
+        } else if (id && id[1] == '#event/') {
+            showEvent(id[3]);
         } else {
             showErrorPage();
-        }
-
-        if (navActive.length && !navActive.parent().hasClass('active')) {
-            navActive.parent().addClass('active').siblings().removeClass('active');
-        } else {
-            $('.nav .active').removeClass('active');
         }
         $(document).scrollTop(0);
     }

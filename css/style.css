@@ -93,11 +93,15 @@ h6, .g-pseudo-h6 { font-size: 15px; }
 a {
     cursor: pointer;
 }
+a:hover {
+    text-decoration: none;
+}
 
 #wrap {
     position: relative;
+    min-width: 700px;
     min-height: 100%;
-    padding: 100px 0 0 200px;
+    padding: 60px 0 0 200px;
 
     background-color: #11a9e2;
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0d86b3), to(#11a9e2));
@@ -105,7 +109,7 @@ a {
     background-repeat: no-repeat;
     text-rendering: optimizeLegibility;
     font: 14px/20px "Helvetica Neue", Helvetica, Arial, sans-serif;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
 }
 
 .header {
@@ -126,23 +130,23 @@ a {
     left: 0;
     width: 200px;
     height: 100%;
-    padding: 120px 10px 0 10px;
+    padding: 120px 0 0;
     border-right: 1px solid #000;
 }
-
-
-.nav li {
-    margin-bottom: 10px;
-}
 .nav a {
+    display: block;
+    padding: 10px;
     color: #fff;
     font-size: 20px;
-    border-bottom: 1px solid transparent;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
     text-decoration: none;
 }
-.nav .active a,
 .nav a:hover {
-    border-bottom-color: #fff;
+    color: #ccc;
+}
+.nav .active {
+    background-color: #aaa;
 }
 
 #content {
@@ -199,11 +203,56 @@ select {
     position: absolute;
     top: 10px;
     right: 10px;
+    width: 20px;
+    height: 20px;
+    text-indent: -9999px;
+    border: 1px solid  #ccc;
+    border-radius: 3px;
+    background-color: transparent;
+}
+.delete:after {
+    content: '\00D7';
+    float: right;
+    width: 18px;
+    height: 18px;
+    color: #ccc;
+    text-indent: 0;
+    font-size: 24px;
+    line-height: 18px;
+    text-align: center;
+}
+.delete:hover:after {
+    color: red;
 }
 .edit {
     position: absolute;
     top: 10px;
-    right: 100px;
+    right: 40px;
+    width: 26px;
+    height: 20px;
+    text-indent: -9999px;
+    border: 1px solid  #ccc;
+    border-radius: 3px;
+    background-color: transparent;
+}
+.edit:after {
+    content: '\0270E';
+    float: right;
+    width: 24px;
+    height: 18px;
+    color: #ccc;
+    font-size: 22px;
+    line-height: 18px;
+    text-indent: 0;
+    text-align: center;
+}
+.edit:hover:after {
+    color: green;
+}
+
+.date {
+    color: #aaa;
+    font-size: 12px;
 }
 
 .event {
