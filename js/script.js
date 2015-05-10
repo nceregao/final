@@ -1,9 +1,10 @@
 $(function() {
-    var addTpl    = _.template($('#add_tpl').html()),
-        placeTpl  = _.template($('#place_tpl').html()),
-        listTpl   = _.template($('#list_tpl').html()),
-        eventTpl  = _.template($('#event_tpl').html()),
-        errrorTpl = _.template($('#errorpage_tpl').html()),
+    var addTpl     = _.template($('#add_tpl').html()),
+        placeTpl   = _.template($('#place_tpl').html()),
+        listTpl    = _.template($('#list_tpl').html()),
+        eventTpl   = _.template($('#event_tpl').html()),
+        errrorTpl  = _.template($('#errorpage_tpl').html()),
+        infoMarkerTpl = _.template($('#infomarker_tpl').html()),
         listEvent = JSON.parse(localStorage.getItem('listEvent')) || [];
 
     // генерация уникального id с проверкой на совпадения
@@ -20,7 +21,13 @@ $(function() {
         var mapOptions = {
             center: new google.maps.LatLng(49.9945914, 36.2858248),
             zoom: 10,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            overviewMapControl: false
         };
         return new google.maps.Map(document.getElementById("map"), mapOptions);
     }
@@ -221,26 +228,93 @@ $(function() {
 
     // отображение всех событий на карте
     function showPlace() {
-        var map;
+        var map,
+            image = {
+                url: 'images/marker.png',
+                size: new google.maps.Size(40, 40),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(20, 40),
+                scaledSize: new google.maps.Size(40, 40)
+            },
+            infowindow = new google.maps.InfoWindow({
+                maxWidth: 300
+            }),
+            latlngbounds = new google.maps.LatLngBounds(),
+            markers = {};
 
         $('#content').html(placeTpl());
         map = mapInit();
 
-        _.each(listEvent, function(oneEvent, i) {
-            var marker;
 
-            if (oneEvent.marker) {
-                marker = new google.maps.Marker({
-                    map: map,
-                    title: oneEvent.name,
-                    position: new google.maps.LatLng(oneEvent.marker[0], oneEvent.marker[1])
+        _.each(listEvent, function(oneEvent, i) {
+            var marker,
+                position;
+
+            if (!oneEvent.marker) {
+                return;
+            }
+            position = new google.maps.LatLng(oneEvent.marker[0], oneEvent.marker[1]);
+            latlngbounds.extend(position);
+
+            marker = new google.maps.Marker({
+                map: map,
+                position: position,
+                icon: image,
+                title: oneEvent.name
+            });
+            infowindow = new google.maps.InfoWindow({
+                content: infoMarkerTpl(listEvent[i]),
+                maxWidth: 300
+            });
+            google.maps.event.addListener(marker, 'click', function() {
+                infowindow.setContent( infoMarkerTpl(oneEvent) );
+                infowindow.open(map, marker);
+            });
+            markers[oneEvent.id] = marker;
+        });
+
+        map.fitBounds(latlngbounds);
+
+        google.maps.event.addListener(map, 'click', function() {
+            infowindow.close();
+        });
+
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('map-search'));
+        $('#map-search').autocomplete({
+            source: function(request, response){
+                var resEvent = _.filter(listEvent, function(event) {
+                    var pattern = new RegExp(request.term);
+                    return pattern.test(event.name);
                 });
-                google.maps.event.addListener(marker, 'click', function() {
-                    location.hash = '#event/' + oneEvent.id;
+                var resValue = _.map(resEvent, function(event){
+                    return {
+                        label: event.name,
+                        oneEvent: event
+                    };
                 });
+                response(resValue);
+            },
+            select: function(event, ui) {
+                infowindow.setContent( infoMarkerTpl(ui.item.oneEvent) );
+                infowindow.open(map, markers[ui.item.oneEvent.id]);
+            },
+            focus: function(event, ui) {
+                map.panTo(markers[ui.item.oneEvent.id].getPosition());
             }
         });
+
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('full-switch'));
+        $('#full-switch').click(function(e){
+            var center = map.getCenter();
+            $('body').toggleClass('scroll-lock');
+            $('#map').toggleClass('map-open-full');
+            google.maps.event.trigger(map, 'resize');
+            map.setCenter(center);
+            e.preventDefault();
+        });
     }
+
+
 
     // удаление события по id
     function remove(id) {
@@ -320,9 +394,6 @@ $(function() {
                 saveListEvent();
                 showList(val);
             }
-        });
-        $('#search-form').submit(function(e){
-            e.preventDefault();
         });
         $('#search').autocomplete({
             source: function(request, response){

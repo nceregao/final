@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Дневник</title>
-    <link rel="stylesheet" href="js/jquery-ui-1.11.4.custom/jquery-ui.css">
+    <link rel="stylesheet" href="js/jquery-ui-1.11.4.custom/jquery-ui.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script src="js/jquery.js"></script>
     <script src="js/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
@@ -29,8 +29,8 @@
         </div>
     </div>
 
-    <div id="dialog" title="Delete">
-        <p>Are you sure deleted this event?</p>
+    <div id="dialog" title="Удаление события">
+        <p>Вы точно хотите удалить это событие?</p>
     </div>
 
 
@@ -39,10 +39,7 @@
         <% if (item.length) { %>
             <% if (item.length > 1) { %>
             <div class="block-search-form">
-                <form id="search-form">
-                    <input type="text" id="search" placeholder="Введете название события">
-                    <input type="submit" value="Поиск">
-                </form>
+                <input type="text" id="search" placeholder="Введете название события">
             </div>
             <div class="block-sorting">
                 <select name="sorting" id="sorting">
@@ -68,15 +65,19 @@
                     </a>
                     <div class="date"><%= new Date(item.date).toLocaleDateString() %></div>
                     <p style="<%= item.textStyle %>"><%= item.text %></p>
-                    <p class="related">Отношение к событию: <%= item.related %></p>
+                    <p class="related"><%= item.related %></p>
                 </li>
             <% }) %>
             </ul>
+            <div class="tc">
+                <a href="#event/add" class="btn">Добавить событие</a>
+            </div>
         <% } else { %>
             <h4>Ваш список пуст!</h4><br>
             <a href="#event/add">Добавить событие</a>
         <% } %>
     </script>
+
     <script type="text/event_tpl" id="event_tpl">
         <div class="event" data-id="<%= id %>">
             <a href="#" class="delete">remove</a>
@@ -90,17 +91,18 @@
                 <img src="<%= photos %>" alt="" width="" height="">
             </div>
         <% } %>
-            <div id="map"></div>
         <% if (video !== '') { %>
             <iframe width="100%" height="315" src="<%= video %>" frameborder="0" allowfullscreen></iframe>
         <% } %>
+            <div id="map"></div>
         </div>
     </script>
+
     <script type="text/add_tpl" id="add_tpl">
         <div class="general-form">
             <form id="add-event">
                 <label class="input-holder">
-                    <input type="text" name="nameEvent" value="<%= name %>" placeholder="Название события">
+                    <input type="text" name="nameEvent" value="<%= name %>" placeholder="Название события*">
                 </label>
 
                 <div class="input-holder block-styles">
@@ -115,7 +117,7 @@
                     <label><input type="checkbox" name="fontStyle" value="italic"><i>I</i></label>
                     <label><input type="checkbox" name="textDecoration" value="underline"><u>U</u></label>
                     <div class="select-color">
-                        <a class="color-show">Text Color</a>
+                        <a class="color-show">Цвет текста</a>
                         <ul class="drop-down">
                             <li><label><input type="radio" name="color" value="black">black</label></li>
                             <li><label><input type="radio" name="color" value="red">red</label></li>
@@ -127,10 +129,10 @@
                 </div>
 
                 <label class="input-holder">
-                    <textarea name="description" cols="30" rows="50" placeholder="Описание" style="<%= textStyle %>"><%= text %></textarea>
+                    <textarea name="description" cols="30" rows="50" placeholder="Описание*" style="<%= textStyle %>"><%= text %></textarea>
                 </label>
                 <label class="input-holder">
-                    <input type="text" name="date" value="<%= date && new Date(date).toLocaleDateString() %>" placeholder="Дата в формате дд.мм.гг" id="date">
+                    <input type="text" name="date" value="<%= date && new Date(date).toLocaleDateString() %>" placeholder="Дата в формате дд.мм.гг*" id="date">
                 </label>
                 <label class="input-holder">
                     <select name="related" id="related">
@@ -147,13 +149,32 @@
                 </label>
                 <div id="map"></div>
                 <p class="errormsg"></p>
-                <input type="submit" name="save" value="Сохранить" class="button">
+                <div class="tc">
+                    <input type="submit" name="save" value="Сохранить" class="btn">
+                </div>
             </form>
         </div>
     </script>
 
     <script type="text/place_tpl" id="place_tpl">
         <div id="map" class="all-events"></div>
+        <input id="map-search" type="text" placeholder="Поиск событий" class="map-search">
+        <a id="full-switch" href="#" class="full-switch">&times;</a>
+    </script>
+
+    <script type="text/infowindow_tpl" id="infomarker_tpl">
+        <div class="info-marker">
+            <a href="#event/<%= id %>">
+                <% if (photos !== '') { %>
+                    <img src="<%= photos %>" alt="" width="" height="">
+                <% } %>
+                <span class="name"><%= name %></span>
+            </a>
+            <div class="date"><%= new Date(date).toLocaleDateString() %></div>
+            <p class="description" style="<%= textStyle %>"><%= text %></p>
+            <p class="related"><%= related %></p>
+            <a href="#event/<%= id %>">Больше...</a>
+        </div>
     </script>
 
     <script type="text/errorpage_tpl" id="errorpage_tpl">
