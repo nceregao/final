@@ -7,35 +7,7 @@ $(function() {
         infoMarkerTpl = _.template($('#infomarker_tpl').html()),
         listEvent = JSON.parse(localStorage.getItem('listEvent')) || [];
 
-    // генерация уникального id с проверкой на совпадения
-    function generateId() {
-        var newId = _.uniqueId();
-        var oneEvent = _.find(listEvent, function(item) {
-            return item.id === newId;
-        });
-        return oneEvent ? generateId(listEvent) : newId;
-    }
 
-    // инициализация карты
-    function mapInit() {
-        var mapOptions = {
-            center: new google.maps.LatLng(49.9945914, 36.2858248),
-            zoom: 10,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            panControl: false,
-            zoomControl: false,
-            mapTypeControl: false,
-            scaleControl: false,
-            streetViewControl: false,
-            overviewMapControl: false
-        };
-        return new google.maps.Map(document.getElementById("map"), mapOptions);
-    }
-
-    // сохранение списка на localStorage
-    function saveListEvent() {
-        localStorage.setItem('listEvent', JSON.stringify(listEvent));
-    }
 
     // конструктор события
     function Event(param) {
@@ -50,6 +22,48 @@ $(function() {
         this.marker = param.marker || '';
         this.photos = param.photos || '';
     }
+
+
+
+    // сохранение списка на localStorage
+    function saveListEvent() {
+        localStorage.setItem('listEvent', JSON.stringify(listEvent));
+    }
+
+
+
+
+    // генерация уникального id с проверкой на совпадения
+    function generateId() {
+        var newId = _.uniqueId();
+        var oneEvent = _.find(listEvent, function(item) {
+            return item.id === newId;
+        });
+        return oneEvent ? generateId(listEvent) : newId;
+    }
+
+
+
+    // инициализация карты
+    function mapInit() {
+        var mapOptions = {
+            zoom: 10,
+            panControl: false,
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            center: new google.maps.LatLng(49.9945914, 36.2858248)
+        };
+        return new google.maps.Map(document.getElementById("map"), mapOptions);
+    }
+
+
+
+
+
 
     // форма для добавления и редактирования события
     function showEdit(id) {
@@ -226,6 +240,9 @@ $(function() {
     }
 
 
+
+
+
     // отображение всех событий на карте
     function showPlace() {
         var map,
@@ -316,6 +333,8 @@ $(function() {
 
 
 
+
+
     // удаление события по id
     function remove(id) {
         listEvent = _.filter(listEvent, function(event) {
@@ -323,6 +342,10 @@ $(function() {
         });
         saveListEvent();
     }
+
+
+
+
 
     // модальное окно подтверждения удаления события
     function removeDialog() {
@@ -349,6 +372,10 @@ $(function() {
             }
         });
     }
+
+
+
+
 
     // отображение списка событий
     function showList(sort) {
@@ -415,6 +442,10 @@ $(function() {
         });
     }
 
+
+
+
+
     // отображение одного события
     function showEvent(id) {
         var map,
@@ -446,10 +477,17 @@ $(function() {
         });
     }
 
+
+
+
+
     // 404
     function showErrorPage() {
         $('#content').html(errrorTpl());
     }
+
+
+
 
 
     function route() {
@@ -460,6 +498,8 @@ $(function() {
         $('.nav .active').removeClass('active');
         if (navActive.length) {
             navActive.addClass('active');
+        } else if (hash === "") {
+            $('.nav a').first().addClass('active');
         }
 
         if (hash === "" || hash === "#list") {

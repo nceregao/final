@@ -4,19 +4,14 @@
        -moz-box-sizing: border-box;
             box-sizing: border-box;
 }
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+html, body, div, span, iframe,
+h1, h2, h3, h4, h5, h6, p,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
+small, strike, strong, sub, sup, tt, var
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+table, caption, tbody, tfoot, thead, tr, th, td {
     margin: 0;
     padding: 0;
     border: 0;
@@ -106,16 +101,9 @@ a:hover {
     text-decoration: none;
 }
 
-.tc {
-    text-align: center;
-}
-.tl {
-    text-align: left;
-}
-.tr {
-    text-align: right;
-}
-
+.tc { text-align: center }
+.tl { text-align: left   }
+.tr { text-align: right  }
 
 
 #wrap {
@@ -276,48 +264,52 @@ input.map-search {
 }
 .delete {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 20px;
+    top: 0;
+    right: 0;
+    width: 34px;
     height: 20px;
     text-indent: -9999px;
     border: 1px solid  #ccc;
-    border-radius: 3px;
+    border-width: 0 0 1px 1px;
     background-color: transparent;
 }
 .delete:after {
     content: '\00D7';
     float: right;
-    width: 18px;
-    height: 18px;
+    width: 100%;
+    height: 100%;
     color: #ccc;
     text-indent: 0;
     font-size: 24px;
-    line-height: 18px;
+    line-height: 20px;
     text-align: center;
 }
 .delete:hover:after {
     color: red;
 }
+.event .edit,
+.event .delete {
+    border-width: 1px;
+}
 .edit {
     position: absolute;
-    top: 10px;
-    right: 40px;
-    width: 26px;
+    top: 0;
+    right: 34px;
+    width: 34px;
     height: 20px;
     text-indent: -9999px;
     border: 1px solid  #ccc;
-    border-radius: 3px;
+    border-width: 0 0 1px 1px;
     background-color: transparent;
 }
 .edit:after {
     content: '\0270E';
     float: right;
-    width: 24px;
-    height: 18px;
+    width: 100%;
+    height: 100%;
     color: #ccc;
     font-size: 22px;
-    line-height: 18px;
+    line-height: 20px;
     text-indent: 0;
     text-align: center;
 }
@@ -333,6 +325,9 @@ input.map-search {
 .event {
     position: relative;
 }
+
+
+
 
 .g-error {
     border-color: red !important;

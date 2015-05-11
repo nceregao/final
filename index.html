@@ -55,8 +55,8 @@
             <ul class="list-events">
             <% _.each(item, function(item) { %>
                 <li data-id="<%= item.id %>">
-                    <a href="#" class="delete">remove</a>
-                    <a href="#event/edit/<%= item.id %>" class="edit">edit</a>
+                    <a href="#" class="delete" title="Удалить">remove</a>
+                    <a href="#event/edit/<%= item.id %>" class="edit" title="Редактировать">edit</a>
                     <a href="#event/<%= item.id %>">
                 <% if (item.photos !== '') { %>
                         <img src="<%= item.photos %>" alt="" width="" height="">
@@ -80,8 +80,8 @@
 
     <script type="text/event_tpl" id="event_tpl">
         <div class="event" data-id="<%= id %>">
-            <a href="#" class="delete">remove</a>
-            <a href="#event/edit/<%= id %>" class="edit">edit</a>
+            <a href="#" class="delete" title="Удалить">remove</a>
+            <a href="#event/edit/<%= id %>" class="edit" title="Редактировать">edit</a>
             <h1><%= name %></h1>
             <p class="date"><%= new Date(date).toLocaleDateString() %></p>
             <p class="description" style="<%= textStyle %>"><%= text %></p>
@@ -159,7 +159,7 @@
     <script type="text/place_tpl" id="place_tpl">
         <div id="map" class="all-events"></div>
         <input id="map-search" type="text" placeholder="Поиск событий" class="map-search">
-        <a id="full-switch" href="#" class="full-switch">&times;</a>
+        <a id="full-switch" href="#" class="full-switch" title="Full screen">&times;</a>
     </script>
 
     <script type="text/infowindow_tpl" id="infomarker_tpl">
