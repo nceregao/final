@@ -290,7 +290,9 @@ $(function() {
             markers[oneEvent.id] = marker;
         });
 
-        map.fitBounds(latlngbounds);
+        if (listEvent > 0) {
+            map.fitBounds(latlngbounds);
+        }
 
         google.maps.event.addListener(map, 'click', function() {
             infowindow.close();
